@@ -8,7 +8,7 @@ class Oystercard
   attr_reader :balance
 
   BALANCE_LIMIT = 90
-  MIN_BALANCE = 1
+  MIN_FARE      = 1
 
   def initialize(balance = 0)
     @balance = balance
@@ -26,12 +26,13 @@ class Oystercard
   end
 
   def touch_in
-    raise LowBalance if @balance < MIN_BALANCE
+    raise_if_insufficient_funds
 
     @in_journey = true
   end
 
   def touch_out
+    charge_min_fare
     @in_journey = false
   end
 
@@ -40,6 +41,18 @@ class Oystercard
   end
 
   private
+
+  def charge_min_fare
+    @balance -= MIN_FARE
+  end
+
+  def raise_if_insufficient_funds
+    raise LowBalance if insufficient_funds?
+  end
+
+  def insufficient_funds?
+    @balance < MIN_FARE
+  end
 
   def raise_if_balance_exceeded(amount)
     raise BalanceLimitExceeded if over_limit?(amount)
