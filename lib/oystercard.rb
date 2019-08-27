@@ -16,6 +16,10 @@ class Oystercard
     @balance += amount
   end
 
+  def deduct(amount)
+    @balance -= amount
+  end
+
   private
 
   def raise_if_balance_exceeded(amount)
