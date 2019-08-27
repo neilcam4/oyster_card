@@ -2,9 +2,13 @@ class Oystercard
   class BalanceLimitExceeded < RuntimeError
   end
 
+  class LowBalance < RuntimeError
+  end
+
   attr_reader :balance
 
   BALANCE_LIMIT = 90
+  MIN_BALANCE = 1
 
   def initialize(balance = 0)
     @balance = balance
@@ -22,6 +26,8 @@ class Oystercard
   end
 
   def touch_in
+    raise LowBalance if @balance < MIN_BALANCE
+
     @in_journey = true
   end
 
