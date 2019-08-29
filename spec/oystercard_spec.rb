@@ -2,6 +2,7 @@ require './lib/oystercard'
 
 describe Oystercard do
   let(:default_top_up) { 10 }
+  let(:station) { double :station }
 
   def top_up_by_default_amount
     subject.top_up(default_top_up)
@@ -37,22 +38,35 @@ describe Oystercard do
       expect(in_journey?).to be false
     end
 
+    it "should remember station where journey starts" do
+        top_up_by_default_amount
+        expect(subject.touch_in(station)).to eq station
+      end
+    end
+
     describe '#touch_in' do
       it 'should be in journey after touching in' do
         top_up_by_default_amount
-        subject.touch_in
-        expect(in_journey?).to be true
+        subject.touch_in(station)
+        expect(subject.in_journey?).to be true
       end
 
       it "should raise error if balance is < #{Oystercard::MIN_FARE}" do
-        expect { subject.touch_in }.to raise_error Oystercard::LowBalance
+        expect { subject.touch_in(station) }.to raise_error Oystercard::LowBalance
       end
     end
 
     describe '#touch_out' do
       it 'should not be in journey after touching out' do
         subject.touch_out
-        expect(in_journey?).to be false
+        expect(subject.in_journey?).to be false
+      end
+
+      it "should forget the entry station on touch out" do
+        top_up_by_default_amount
+        subject.touch_in(station)
+        subject.touch_out
+        expect(subject.entry_station).to eq nil
       end
 
       it 'should reduce balance by minimum fare' do
@@ -60,5 +74,5 @@ describe Oystercard do
         expect { subject.touch_out }.to change { subject.balance }.by -Oystercard::MIN_FARE
       end
     end
+
   end
-end
