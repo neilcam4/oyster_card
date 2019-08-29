@@ -93,5 +93,4 @@ describe Oystercard do
         expect(subject.journeys.length).to eq 1
       end
     end
-
   end
