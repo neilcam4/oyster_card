@@ -8,7 +8,8 @@ class Oystercard
   attr_reader :balance, :entry_station, :journeys
 
   BALANCE_LIMIT = 90
-  MIN_FARE      = 1
+  MIN_FARE = 1
+  PENALTY = 6
 
   def initialize(balance = 0)
     @balance = balance
