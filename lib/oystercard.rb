@@ -5,14 +5,14 @@ class Oystercard
   class LowBalance < RuntimeError
   end
 
-  attr_reader :balance, :entry_station
+  attr_reader :balance, :entry_station, :journeys
 
   BALANCE_LIMIT = 90
   MIN_FARE      = 1
 
   def initialize(balance = 0)
     @balance = balance
-
+    @journeys = []
   end
 
   def top_up(amount)
@@ -27,12 +27,15 @@ class Oystercard
 
   def touch_in(station)
     raise_if_insufficient_funds
+
     @entry_station = station
   end
 
-  def touch_out
+  def touch_out(station)
     charge_min_fare
     @entry_station = nil
+    @exit_station = station
+    @journeys << {entry_station: @entry_station, exit_station: @exit_station}
   end
 
   def in_journey?
